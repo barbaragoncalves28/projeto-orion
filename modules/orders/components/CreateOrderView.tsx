@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createOrder } from "../order.api-client";
@@ -100,34 +101,33 @@ export function CreateOrderView() {
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    setSuccess(null);
-    setIsSubmitting(true);
+  event.preventDefault();
+  setError(null);
+  setSuccess(null);
+  setIsSubmitting(true);
 
-    try {
-      const order = await createOrder({
-        restaurantId,
-        deliveryAddress,
-        items,
+  try {
+    const order = await createOrder({
+      restaurantId,
+      deliveryAddress,
+      items,
     });
 
-      setSuccess("Pedido criado com sucesso.");
-      router.push(`/orders/${order.id}`);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao criar pedido"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.success("Pedido criado com sucesso.");
+    router.push(`/orders/${order.id}`);
+  } catch (err) {
+    setError(
+      err instanceof Error ? err.message : "Erro ao criar pedido"
+    );
+  } finally {
+    setIsSubmitting(false);
   }
+}
 
   return (
-    <main className="mx-auto grid w-full max-w-4xl gap-5 px-4 py-5 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-50 mx-auto w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
       <header>
-        <p className="text-sm font-medium text-slate-500">Pedidos</p>
-        <h1 className="text-2xl font-semibold text-slate-950">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-7">
           Novo pedido
         </h1>
       </header>
@@ -136,17 +136,17 @@ export function CreateOrderView() {
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-5 rounded border border-slate-200 bg-white p-4"
+        className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
       >
-        <section className="grid gap-4">
-          <h2 className="text-sm font-semibold text-slate-950">
-            Restaurante
+        <section className="gap-4">
+          <h2 className="font-medium text-slate-700 mb-2">
+            Restaurante:
           </h2>
 
           <select
             value={restaurantId}
             onChange={(event) => setRestaurantId(event.target.value)}
-            className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-slate-900"
+            className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
             <option value="">Selecione um restaurante</option>
 
@@ -159,10 +159,10 @@ export function CreateOrderView() {
               </option>
             ))}
           </select>
-        </section>
+        </section> 
 
-        <section className="grid gap-4">
-            <h2 className="text-sm font-semibold text-slate-950">Entrega</h2>
+        <section className="grid">
+            <h2 className="font-medium text-slate-700 mb-2">Endereço de entrega:</h2>
 
             <textarea
               value={deliveryAddress}
@@ -171,14 +171,14 @@ export function CreateOrderView() {
             }
             placeholder="Rua, número, bairro, cidade"
             rows={3}
-            className="rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+            className="py-2 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
         </section>
 
-        <section className="grid gap-3">
+        <section className="gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-semibold text-slate-950">
-              Itens
+            <h2 className="font-medium text-slate-700 mt-10 mb-2">
+              Itens do pedido:
             </h2>
 
             <button
@@ -190,7 +190,9 @@ export function CreateOrderView() {
                 ])
               }
               disabled={!restaurantId}
-              className="h-9 rounded border border-slate-300 px-3 text-sm font-medium text-slate-700 disabled:opacity-50"
+              className="h-9 px-3 text-sm disabled:opacity-50 border border-green-600
+            cursor-pointer inline-flex items-center justify-center rounded-xl bg-green-600 font-semibold text-white shadow-lg shadow-green-600/25 transition-all duration-300 hover:bg-green-500
+              "
             >
               Adicionar item
             </button>
@@ -200,7 +202,7 @@ export function CreateOrderView() {
             {items.map((item, index) => (
               <div
                 key={index}
-                className="grid gap-3 rounded border border-slate-200 p-3 sm:grid-cols-[1fr_120px_auto]"
+                className="grid gap-3 p-4 sm:grid-cols-[1fr_120px_auto] rounded-2xl border border-slate-200 bg-white shadow-sm"
               >
                 <select
                   value={item.productId}
@@ -210,7 +212,7 @@ export function CreateOrderView() {
                       productId: event.target.value,
                     })
                   }
-                  className="h-10 rounded border border-slate-300 px-3 text-sm"
+                  className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="">Selecione um produto</option>
 
@@ -234,14 +236,15 @@ export function CreateOrderView() {
                       quantity: Number(event.target.value),
                     })
                   }
-                  className="h-10 rounded border border-slate-300 px-3 text-sm"
+                  className="h-10 px-3 text-sm
+                  rounded-xl border border-slate-300 bg-white text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
 
                 <button
                   type="button"
                   disabled={items.length === 1}
                   onClick={() => removeItem(index)}
-                  className="h-10 rounded border border-slate-300 px-3 text-sm font-medium text-slate-700 disabled:opacity-40"
+                  className="h-10 px-3 text-sm disabled:opacity-50 border border-red-600 cursor-pointer inline-flex items-center justify-center rounded-xl bg-red-600  font-semibold text-white shadow-lg shadow-red-600/25 transition-all duration-300 hover:bg-red-500"
                 >
                   Remover
                 </button>
@@ -254,7 +257,8 @@ export function CreateOrderView() {
           <button
             type="button"
             onClick={() => router.push("/orders")}
-            className="h-10 rounded border border-slate-300 px-4 text-sm font-medium text-slate-700"
+            className="border border-red-600
+            cursor-pointer inline-flex h-10 items-center justify-center rounded-xl bg-red-600 px-4 font-semibold text-white shadow-lg shadow-red-600/25 transition-all duration-300 hover:bg-red-500"
           >
             Cancelar
           </button>
@@ -262,7 +266,7 @@ export function CreateOrderView() {
           <button
             type="submit"
             disabled={!canSubmit || isSubmitting}
-            className="h-10 rounded bg-slate-950 px-4 text-sm font-medium text-white disabled:bg-slate-300"
+            className="h-10 px-4 text-sm disabled:opacity-50 border border-blue-600 cursor-pointer inline-flex items-center justify-center rounded-xl bg-blue-600 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
           >
             {isSubmitting ? "Criando..." : "Criar pedido"}
           </button>

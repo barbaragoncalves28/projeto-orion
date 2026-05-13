@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   cancelOrder,
   fetchOrderById,
@@ -19,7 +20,6 @@ export function useOrderDetails(params: {
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const loadOrder = useCallback(async () => {
     if (!userId) {
@@ -52,7 +52,6 @@ export function useOrderDetails(params: {
   async function changeStatus(newStatus: OrderStatus) {
     setIsMutating(true);
     setError(null);
-    setSuccess(null);
 
     try {
       await updateOrderStatus({
@@ -63,9 +62,13 @@ export function useOrderDetails(params: {
       });
 
       await loadOrder();
-      setSuccess("Status atualizado com sucesso.");
+      toast.success("Status atualizado com sucesso.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao atualizar status");
+      const message =
+      err instanceof Error ? err.message : "Erro ao atualizar status";
+
+    setError(message);
+    toast.error(message);
     } finally {
       setIsMutating(false);
     }
@@ -74,7 +77,6 @@ export function useOrderDetails(params: {
   async function cancel() {
     setIsMutating(true);
     setError(null);
-    setSuccess(null);
 
     try {
       await cancelOrder({
@@ -84,9 +86,13 @@ export function useOrderDetails(params: {
       });
 
       await loadOrder();
-      setSuccess("Pedido cancelado com sucesso.");
+      toast.success("Pedido cancelado com sucesso.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao cancelar pedido");
+      const message =
+      err instanceof Error ? err.message : "Erro ao cancelar pedido";
+
+    setError(message);
+    toast.error(message);
     } finally {
       setIsMutating(false);
     }
@@ -97,7 +103,6 @@ export function useOrderDetails(params: {
     isLoading,
     isMutating,
     error,
-    success,
     reload: loadOrder,
     changeStatus,
     cancel,

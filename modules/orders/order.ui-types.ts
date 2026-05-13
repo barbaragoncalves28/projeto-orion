@@ -21,7 +21,8 @@ export type OrderListItem = {
 export type OrderDetails = Omit<OrderListItem, "items"> & {
   user_id: string;
   restaurant_id: string;
-  items: {
+  delivery_address: string;
+  items: { 
     productId: string;
     name: string | null;
     quantity: number;

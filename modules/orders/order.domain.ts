@@ -1,5 +1,6 @@
 import { AppError } from "@/lib/errors";
-import type { CreateOrderInput, OrderProductSnapshot, OrderStatus } from "./order.types";
+import type { OrderProductSnapshot, OrderStatus } from "./order.types";
+import type { CreateOrderInput } from "./order.validators";
 
 export type OrderItemSnapshot = {
   productId: string;
@@ -58,10 +59,17 @@ export function buildOrderItemsSnapshot(
   });
 }
 
-export function calculateOrderTotal(items: OrderItemSnapshot[]) {
-  return items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+export function calculateOrderTotal(
+  items: OrderItemSnapshot[]
+): number {
+  return items.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
 }
 
-export function uniqueProductIds(items: CreateOrderInput["items"]) {
+export function uniqueProductIds(
+  items: CreateOrderInput["items"]
+): string[] {
   return [...new Set(items.map((item) => item.productId))];
 }

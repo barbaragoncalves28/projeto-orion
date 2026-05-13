@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const uuidMessage = "ID inválido";
+
 export const orderStatusSchema = z.enum([
   "confirmed",
   "preparing",
@@ -19,7 +21,7 @@ export const listOrderStatusSchema = z.enum([
 
 export const createOrderItemSchema = z
   .object({
-    productId: z.coerce.number().int().positive(),
+    productId: z.string().uuid(uuidMessage),
 
     quantity: z
       .number()
@@ -28,12 +30,12 @@ export const createOrderItemSchema = z
       .max(99, "Quantidade máxima por item é 99"),
   })
   .strict();
-
+ 
 export const createOrderSchema = z
   .object({
-    restaurantId: z.coerce.number().int().positive(),
+    restaurantId: z.string().uuid(uuidMessage),
 
-    address: z
+    deliveryAddress: z
       .string()
       .min(5, "Endereço obrigatório")
       .max(255, "Endereço muito grande"),
@@ -44,26 +46,26 @@ export const createOrderSchema = z
       .max(100, "Pedido não pode ter mais de 100 itens"),
   })
   .strict();
-
+ 
 export const updateOrderStatusSchema = z
   .object({
-    orderId: z.string().uuid("ID inválido"),
+    orderId: z.string().uuid(uuidMessage),
     newStatus: orderStatusSchema,
-    userId: z.string().uuid("ID inválido"),
+    userId: z.string().uuid(uuidMessage),
     role: z.enum(["customer", "vendor", "admin"]),
   })
   .strict();
-
+ 
 export const getOrderByIdSchema = z
-  .object({
-    orderId: z.string().uuid("ID inválido"),
+  .object({ 
+    orderId: z.string().uuid(uuidMessage),
   })
   .strict();
-
+ 
 export const cancelOrderSchema = z
   .object({
-    orderId: z.string().uuid("ID inválido"),
-    userId: z.string().uuid("ID inválido"),
+    orderId: z.string().uuid(uuidMessage),
+    userId: z.string().uuid(uuidMessage),
     role: z.enum(["customer", "vendor", "admin"]),
   })
   .strict();
@@ -76,7 +78,9 @@ export const listOrdersSchema = z
   })
   .strict();
 
-export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type CreateOrderInput = z.infer<typeof createOrderSchema> & {
+  userId: string;
+};
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
 export type GetOrderByIdInput = z.infer<typeof getOrderByIdSchema>;
 export type CancelOrderInput = z.infer<typeof cancelOrderSchema>;

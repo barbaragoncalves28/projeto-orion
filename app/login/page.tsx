@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash,
+} from "react-icons/fa";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter(); 
 
   async function handleLogin() {
     if (!email || !password) {
@@ -20,7 +24,7 @@ export default function LoginPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-    });
+    }); 
 
     console.log("status login:", res.status);
 
@@ -35,29 +39,53 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="p-6 max-w-md mx-auto">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-100 px-6">
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white bg-slate-300/70 backdrop-blur-xl shadow-2xl shadow-black/30 p-8">
+      <h1 className="text-3xl font-bold text-white mb-8 flex justify-center">
+          Login
+      </h1>
+
+      <p className="text-slate-500 mb-6 justify-center flex">
+          Entre para acessar seu painel de pedidos.
+      </p>
+
+      <div className="relative mb-3">
+        <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
       <input
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 w-full mb-2"
+        className="w-full rounded-xl border border-slate-100 bg-white pl-12 pr-4 py-3 placeholder:text-slate-500 outline-none transition focus:border-blue-200 focus:ring-2 focus:ring-blue-200/20"
       />
+      </div>  
 
+    <div className="relative mb-5">
+      <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
       <input
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder="Senha"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 w-full mb-2"
+        className="w-full rounded-xl border border-slate-100 bg-white pl-12 pr-12 py-3 placeholder:text-slate-500 outline-none transition focus:border-blue-200 focus:ring-2 focus:ring-blue-200/20"
       />
+
+      <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition cursor-pointer"
+          >
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
+          </button>
+      </div>
 
       <button
         type="button"
         onClick={handleLogin}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+        className="cursor-pointer w-full inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
       >
         Login
       </button>
+      </div>
     </div>
   );
 }

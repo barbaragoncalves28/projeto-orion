@@ -1,12 +1,14 @@
 import { AppError } from "@/lib/errors";
 import { withTransaction } from "@/lib/db";
 import type {
-  CancelOrderInput,
-  CreateOrderInput,
   OrderEventName,
   OrderRecord,
-  UpdateOrderStatusInput,
 } from "./order.types";
+import type {
+  CancelOrderInput,
+  CreateOrderInput,
+  UpdateOrderStatusInput,
+} from "./order.validators";
 import {
   assertCanEditOrderItems,
   assertValidStatusTransition,
@@ -81,7 +83,7 @@ export class OrderService {
         {
             userId: input.userId,
             restaurantId: input.restaurantId,
-            address: input.address,
+            deliveryAddress: input.deliveryAddress,
             total,
         },
         client

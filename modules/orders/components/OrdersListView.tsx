@@ -26,30 +26,29 @@ export function OrdersListView() {
   });
 
   return (
-    <main className="mx-auto grid w-full max-w-5xl gap-5 px-4 py-5 sm:px-6 lg:px-8">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-screen bg-slate-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">Pedidos</p>
-          <h1 className="text-2xl font-semibold text-slate-950">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Lista de pedidos
           </h1>
         </div>
 
         <Link
           href="/orders/new"
-          className="inline-flex h-10 items-center justify-center rounded bg-slate-950 px-4 text-sm font-medium text-white hover:bg-slate-800"
+          className="cursor-pointer inline-flex h-10 items-center text-sm rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
         >
           Novo pedido
         </Link>
       </header>
 
-      <section className="grid gap-4 rounded border border-slate-200 bg-white p-4">
-        <label className="grid gap-1 text-sm sm:max-w-60">
+      <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <label className="grid gap-2 text-sm sm:max-w-60">
           <span className="font-medium text-slate-700">Status</span>
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value as "" | OrderStatus)}
-            className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-slate-900"
+            className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
             {statusOptions.map((option) => (
               <option key={option.value || "all"} value={option.value}>
@@ -65,19 +64,19 @@ export function OrdersListView() {
       {isLoading ? (
         <LoadingRows />
       ) : orders.length === 0 ? (
-        <EmptyState text="Nenhum pedido encontrado para os filtros atuais." />
+        <EmptyState text="Nenhum pedido encontrado." />
       ) : (
-        <section className="grid gap-3">
+        <section className="grid gap-4">
           {orders.map((order) => (
             <Link
               href={`/orders/${order.id}`}
               key={order.id}
-              className="grid gap-3 rounded border border-slate-200 bg-white p-4 hover:border-slate-400 sm:grid-cols-[1fr_auto] sm:items-center"
+              className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-blue-300 hover:shadow-md sm:grid-cols-[1fr_auto] sm:items-center"
             >
               <div className="grid gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-sm text-slate-600">
-                    {order.id}
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm text-slate-600">
+                    Pedido #{order.id.slice(0, 4).toUpperCase()}
                   </span>
                   <OrderStatusBadge status={order.status} />
                 </div>
@@ -86,7 +85,7 @@ export function OrdersListView() {
                 </p>
               </div>
 
-              <strong className="text-lg text-slate-950">
+              <strong className="text-xl font-bold text-slate-800">
                 {formatMoney(order.total)}
               </strong>
             </Link>
@@ -99,7 +98,7 @@ export function OrdersListView() {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
       {text}
     </div>
   );
@@ -107,13 +106,13 @@ function EmptyState({ text }: { text: string }) {
 
 function LoadingRows() {
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-4">
       {[0, 1, 2].map((item) => (
         <div
           key={item}
-          className="h-24 animate-pulse rounded border border-slate-200 bg-slate-100"
+          className="h-24 animate-pulse rounded-2xl border border-slate-200 bg-slate-100"
         />
-      ))}
+      ))} 
     </div>
   );
 }

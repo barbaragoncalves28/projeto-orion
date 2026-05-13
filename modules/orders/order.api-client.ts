@@ -42,16 +42,15 @@ export async function fetchOrders(params: {
 
 export async function fetchOrderById(params: {
   orderId: string;
-  userId?: string;
-  role?: string;
 }) {
   const response = await fetch(`/api/orders/${params.orderId}`);
 
   return parseResponse<OrderDetails>(response);
 }
 
-export async function createOrder(params: {
+export async function createOrder(params: { 
   restaurantId: string;
+  deliveryAddress: string;
   items: DraftOrderItem[];
 }) {
   const response = await fetch("/api/orders", {
@@ -61,6 +60,7 @@ export async function createOrder(params: {
     },
     body: JSON.stringify({
       restaurantId: params.restaurantId,
+      deliveryAddress: params.deliveryAddress,
       items: params.items,
     }),
   });
@@ -74,7 +74,6 @@ export async function updateOrderStatus(params: {
   userId?: string;
   role?: string;
 }) {
-  console.log("ENVIANDO:", params);
 
   const response = await fetch(`/api/orders/${params.orderId}/status`, {
     method: "PATCH",

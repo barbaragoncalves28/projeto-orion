@@ -128,7 +128,22 @@ export async function getOrderById(
       )
     ) FILTER (WHERE oi.id IS NOT NULL),
     '[]'
-  ) AS items
+  ) AS items,
+
+   COALESCE(
+  (
+    SELECT json_agg(history_item ORDER BY history_item->>'changedAt')
+    FROM (
+      SELECT DISTINCT jsonb_build_object(
+        'status', osh.status,
+        'changedAt', osh.changed_at
+      ) AS history_item
+      FROM order_status_history osh
+      WHERE osh.order_id = o.id
+    ) AS history_rows
+  ),
+  '[]'
+) AS history
 
 FROM orders o
 
@@ -143,6 +158,9 @@ LEFT JOIN order_items oi
 
 LEFT JOIN products p
   ON p.id = oi.product_id
+
+LEFT JOIN order_status_history osh
+  ON osh.order_id = o.id
 
 WHERE o.id = $1
 

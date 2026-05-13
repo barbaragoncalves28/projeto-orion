@@ -1,3 +1,4 @@
+import { pool } from "@/lib/db";
 export async function getTotalRevenue() {
   const res = await pool.query(`
     SELECT COALESCE(SUM(total), 0) as total

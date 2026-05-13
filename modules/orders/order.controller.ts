@@ -139,13 +139,11 @@ export async function cancelOrderController(req: NextRequest, orderId: string) {
     const user = await getUserFromRequest();
     const parsed = cancelOrderSchema.parse({
       orderId,
-    });
-
-    const order = await cancelOrderService({
-      ...parsed,
       userId: user.id,
       role: user.role,
     });
+
+    const order = await cancelOrderService(parsed);
 
     return NextResponse.json(order);
   } catch (error) {
