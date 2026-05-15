@@ -77,14 +77,31 @@ export class OrderService {
       }
 
       const items = buildOrderItemsSnapshot(input.items, products);
-      const total = calculateOrderTotal(items);
+      const subtotal = calculateOrderTotal(items);
+      const deliveryFee =
+      input.deliveryType === "delivery" ? 8 : 0;
+      const total = subtotal + deliveryFee;
 
-      const order = await createOrder(
+      const order = await createOrder( 
         {
             userId: input.userId,
             restaurantId: input.restaurantId,
-            deliveryAddress: input.deliveryAddress,
-            total,
+            customerName: input.customerName,
+            customerPhone: input.customerPhone,
+            paymentMethod: input.paymentMethod,
+            notes: input.notes ?? null, 
+            deliveryType: input.deliveryType,
+            deliveryAddress:
+              input.deliveryType === "delivery"
+              ? input.deliveryAddress ?? ""
+              : "",
+
+          deliveryFee,
+          subtotal,
+          total,
+
+          estimatedDeliveryAt:
+          input.estimatedDeliveryAt ?? null,
         },
         client
       );

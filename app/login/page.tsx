@@ -39,13 +39,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-100 px-6">
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white bg-slate-300/70 backdrop-blur-xl shadow-2xl shadow-black/30 p-8">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-6">
+
+    <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/background.png')",
+        }}
+      />
+
+      <div className="absolute inset-0 bg-black/55" />
+
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-2xl shadow-black/40 p-8">
       <h1 className="text-3xl font-bold text-white mb-8 flex justify-center">
           Login
       </h1>
 
-      <p className="text-slate-500 mb-6 justify-center flex">
+      <p className="text-slate-400 mb-6 justify-center flex">
           Entre para acessar seu painel de pedidos.
       </p>
 
@@ -83,7 +93,7 @@ export default function LoginPage() {
         onClick={handleLogin}
         className="cursor-pointer w-full inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
       >
-        Login
+        Entrar
       </button>
       </div>
     </div>

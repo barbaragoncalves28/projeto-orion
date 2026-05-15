@@ -1,4 +1,3 @@
-import Link from "next/link";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 
@@ -8,13 +7,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
+    <html lang="pt-BR">
       <body>
-        <nav className="p-4 border-b flex gap-4">
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/orders">Pedidos</Link>
-        </nav>
-
         {children}
         <Toaster position="top-right" />
       </body>

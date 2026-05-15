@@ -7,6 +7,8 @@ import { formatDate, formatMoney, statusLabels } from "../order.ui";
 import { OrderFeedback } from "./OrderFeedback";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { useState } from "react";
+import { OrderDeliveryTypeBadge } from "./OrderDeliveryTypeBadge";
+import { PageHeader } from "./PageHeader";
 
 const statusOptions: { value: "" | OrderStatus; label: string }[] = [
   { value: "", label: "Todos" },
@@ -26,15 +28,13 @@ export function OrdersListView() {
   });
 
   return (
-    <main className="min-h-screen bg-slate-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
+    <main className="min-h-screen bg-gray-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Lista de pedidos
-          </h1>
+          <PageHeader title="Lista de pedidos" />
         </div>
 
-        <Link
+        <Link 
           href="/orders/new"
           className="cursor-pointer inline-flex h-10 items-center text-sm rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
         >
@@ -79,6 +79,8 @@ export function OrdersListView() {
                     Pedido #{order.id.slice(0, 4).toUpperCase()}
                   </span>
                   <OrderStatusBadge status={order.status} />
+
+                  <OrderDeliveryTypeBadge type={order.delivery_type as "delivery" | "pickup"}/>
                 </div>
                 <p className="text-sm text-slate-500">
                   {order.items.length} item(ns) • {formatDate(order.created_at)}

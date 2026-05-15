@@ -19,6 +19,18 @@ export const listOrderStatusSchema = z.enum([
   "cancelled",
 ]);
 
+export const paymentMethodSchema = z.enum([
+  "pix",
+  "dinheiro",
+  "debito",
+  "credito",
+]);
+
+export const deliveryTypeSchema = z.enum([
+  "delivery",
+  "pickup",
+]);
+
 export const createOrderItemSchema = z
   .object({
     productId: z.string().uuid(uuidMessage),
@@ -35,17 +47,53 @@ export const createOrderSchema = z
   .object({
     restaurantId: z.string().uuid(uuidMessage),
 
+    customerName: z
+      .string()
+      .min(2, "Nome do cliente obrigatório")
+      .max(255, "Nome muito grande"),
+
+    customerPhone: z
+      .string()
+      .min(8, "Telefone inválido")
+      .max(30, "Telefone muito grande"),
+
+    paymentMethod: paymentMethodSchema,
+
+    notes: z
+      .string()
+      .max(500, "Observação muito grande")
+      .optional(),
+
+    deliveryType: deliveryTypeSchema,
+
     deliveryAddress: z
       .string()
-      .min(5, "Endereço obrigatório")
-      .max(255, "Endereço muito grande"),
+      .max(255, "Endereço muito grande")
+      .optional(),
+
+      estimatedDeliveryAt: z
+      .string()
+      .datetime("Data/horário inválido")
+      .optional(),
 
     items: z
       .array(createOrderItemSchema)
       .min(1, "Pedido deve ter ao menos um item")
       .max(100, "Pedido não pode ter mais de 100 itens"),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    if (
+      data.deliveryType === "delivery" &&
+      (!data.deliveryAddress || data.deliveryAddress.trim().length < 5)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["deliveryAddress"],
+        message: "Endereço obrigatório para entrega",
+      });
+    }
+  });
  
 export const updateOrderStatusSchema = z
   .object({

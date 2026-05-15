@@ -26,13 +26,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-100">
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white bg-slate-300/70 backdrop-blur-xl shadow-2xl shadow-black/30 p-8">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/background.png')",
+        }}
+      />
+
+        <div className="absolute inset-0 bg-black/55" />
+
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-2xl shadow-black/40 p-8">
         <h1 className="text-3xl font-bold text-white mb-8 justify-center flex">
           Criar conta
         </h1>
 
-         <p className="text-slate-500 mb-6">
+         <p className="text-slate-400 mb-6">
           Cadastre-se para começar a gerenciar seus pedidos.
         </p>
 

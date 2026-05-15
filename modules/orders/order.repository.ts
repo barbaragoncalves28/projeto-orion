@@ -9,8 +9,18 @@ const clientOrPool = (trx?: QueryClient): QueryClient => trx ?? pool;
 export type CreateOrderParams = {
   userId: string;
   restaurantId: string;
-  deliveryAddress: string;
+  customerName: string;
+  customerPhone: string;
+  paymentMethod: string;
+  notes?: string;
+
+  deliveryType: "delivery" | "pickup";
+  deliveryAddress?: string;
+  deliveryFee: number;
+  subtotal: number;
   total: number;
+
+  estimatedDeliveryAt?: string;
 };
 
 export type CreateOrderItemsParams = {
@@ -41,26 +51,44 @@ export async function createOrder(
   params: CreateOrderParams,
   trx: QueryClient
 ): Promise<OrderRecord> {
+  const deliveryFee =
+    params.deliveryType === "delivery" ? 8 : 0;
+
   const result = await clientOrPool(trx).query<OrderRecord>(
     `
     INSERT INTO orders (
       user_id,
       restaurant_id,
+      customer_name,
+      customer_phone,
+      payment_method,
+      notes,
+      delivery_type,
       delivery_address,
+      estimated_delivery_at,
+      subtotal,
+      delivery_fee,
       status,
       total
 )
-VALUES ($1, $2, $3, 'pending', $4)
-    RETURNING
-      id,
-      user_id,
-      restaurant_id,
-      delivery_address,
-      status,
-      total,
-      created_at
+VALUES ($1, $2, $3, $4, $5, $6,
+      $7, $8, $9, $10, $11, 'pending', $12) 
+    RETURNING *
     `,
-    [ params.userId, params.restaurantId, params.deliveryAddress, params.total, ]
+    [
+      params.userId,                 // $1
+      params.restaurantId,           // $2
+      params.customerName,           // $3
+      params.customerPhone,          // $4
+      params.paymentMethod,          // $5
+      params.notes ?? null,          // $6
+      params.deliveryType,           // $7
+      params.deliveryAddress ?? null,// $8
+      params.estimatedDeliveryAt ?? null, // $9
+      params.subtotal,                      // $10
+      deliveryFee,                   // $11
+      params.total, 
+    ]
   );
 
   return result.rows[0];
@@ -110,10 +138,16 @@ export async function getOrderById(
     SELECT
   o.id,
   o.user_id,
-  u.name AS customer_name,
+  o.customer_name,
+  o.customer_phone,
+  o.payment_method,
   o.restaurant_id,
   r.name AS restaurant_name,
+  o.delivery_type,
   o.delivery_address,
+  o.notes,
+  o.subtotal,
+  o.delivery_fee,
   o.status,
   o.total,
   o.created_at,
@@ -165,15 +199,21 @@ LEFT JOIN order_status_history osh
 WHERE o.id = $1
 
 GROUP BY
-  o.id,
-  o.user_id,
-  o.restaurant_id,
-  o.delivery_address,
-  o.status,
-  o.total,
-  o.created_at,
-  u.name,
-  r.name
+      o.id,
+      o.user_id,
+      o.customer_name,
+      o.customer_phone,
+      o.payment_method,
+      o.delivery_type,
+      o.delivery_address,
+      o.notes,
+      o.subtotal,
+      o.delivery_fee,
+      o.total,
+      o.restaurant_id,
+      r.name,
+      o.status,
+      o.created_at
     `,
     [orderId]
   );
@@ -187,14 +227,7 @@ export async function lockOrderById(
 ): Promise<OrderRecord | undefined> {
   const result = await trx.query<OrderRecord>(
     `
-    SELECT
-      id,
-      user_id,
-      restaurant_id,
-      delivery_address,
-      status,
-      total,
-      created_at
+    SELECT *
     FROM orders
     WHERE id = $1
     FOR UPDATE
@@ -280,14 +313,7 @@ export async function updateOrderTotal(
 
   const result = await trx.query<OrderRecord>(
     `
-    SELECT
-      id,
-      user_id,
-      restaurant_id,
-      delivery_address,
-      status,
-      total,
-      created_at
+    SELECT *
     FROM orders
     WHERE id = $1
     `,
@@ -309,15 +335,8 @@ export async function updateOrderStatus(
       confirmed_at = CASE WHEN $1::order_status = 'confirmed' THEN NOW() ELSE confirmed_at END,
       cancelled_at = CASE WHEN $1::order_status = 'cancelled' THEN NOW() ELSE cancelled_at END
     WHERE id = $2
-      AND status = $3::order_status
-    RETURNING
-      id,
-      user_id,
-      restaurant_id,
-      delivery_address,
-      status,
-      total,
-      created_at
+      AND status = $3::order_status 
+    RETURNING *
     `,
     [params.newStatus, params.orderId, params.previousStatus]
   );
@@ -350,10 +369,15 @@ export async function listOrders(
   o.id,
   o.status,
   o.total,
+  o.subtotal,
+  o.delivery_fee,
+  o.delivery_type,
   o.delivery_address,
+  o.payment_method,
+  o.customer_name,
+  o.customer_phone,
   o.created_at,
 
-  u.name AS customer_name,
   r.name AS restaurant_name,
 
   COALESCE(
@@ -369,9 +393,6 @@ export async function listOrders(
 
 FROM orders o
 
-LEFT JOIN users u
-  ON u.id = o.user_id
-
 LEFT JOIN restaurants r
   ON r.id = o.restaurant_id
 
@@ -381,15 +402,18 @@ LEFT JOIN order_items oi
 ${where}
 
 GROUP BY
-  o.id,
-  o.user_id,
-  o.restaurant_id,
-  o.delivery_address,
-  o.status,
-  o.total,
-  o.created_at,
-  u.name,
-  r.name
+      o.id,
+      o.status,
+      o.total,
+      o.subtotal,
+      o.delivery_fee,
+      o.delivery_type,
+      o.delivery_address,
+      o.payment_method,
+      o.customer_name,
+      o.customer_phone,
+      o.created_at,
+      r.name
 
 ORDER BY o.created_at DESC
 

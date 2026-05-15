@@ -1,17 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createOrder } from "../order.api-client";
 import type { DraftOrderItem } from "../order.ui-types";
 import { OrderFeedback } from "./OrderFeedback";
+import { FaPlus, FaTrash } from "react-icons/fa";
+import { formatPhone, } from "../order.ui";
+import { PageHeader } from "./PageHeader";
 
 type Restaurant = {
   id: number;
   name: string;
   description: string;
+};
+
+type PaymentMethod = {
+  id: string;
+  name: string;
+};
+
+type OrderType = {
+  id: "delivery" | "pickup";
+  name: string;
 };
 
 type Product = {
@@ -26,26 +39,54 @@ const emptyItem: DraftOrderItem = {
   quantity: 1,
 };
 
+const DELIVERY_FEE = 8;
+
 export function CreateOrderView() {
   const router = useRouter();
-
+ 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
 
   const [restaurantId, setRestaurantId] = useState("");
   const [items, setItems] = useState<DraftOrderItem[]>([{ ...emptyItem }]);
 
+  const [customerName, setCustomerName] = useState(""); 
+  const [customerPhone, setCustomerPhone] = useState("");
+  
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [notes, setNotes] = useState("");
+  const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
+  const [deliveryType, setDeliveryType] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [estimatedDeliveryAt, setEstimatedDeliveryAt] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
-  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const subtotal = useMemo(() => {
+    return items.reduce((acc, item) => {
+      const product = products.find((p) => p.id === item.productId);
+      if (!product) return acc;
+
+      return acc + Number(product.price) * item.quantity;
+    }, 0);
+  }, [items, products]);
+
+  const deliveryFee = deliveryType === "delivery" ? DELIVERY_FEE : 0;
+  const total = subtotal + deliveryFee;
+
+  const [success, setSuccess] = useState<string | null>(null);
 
   const canSubmit =
   restaurantId &&
-  deliveryAddress.trim() &&
+  customerName.trim() &&
+  customerPhone.trim() &&
+  paymentMethod &&
+  deliveryType &&
   items.length > 0 &&
-  items.every((item) => item.productId && item.quantity > 0);
+  items.every((item) => item.productId && item.quantity > 0) &&
+    (deliveryType === "pickup" || deliveryAddress.trim());
 
   useEffect(() => {
     async function loadRestaurants() {
@@ -60,6 +101,38 @@ export function CreateOrderView() {
 
     loadRestaurants();
   }, []);
+
+  useEffect(() => {
+  async function loadPaymentMethods() {
+    try {
+      const res = await fetch("/api/payment-methods");
+      const data = await res.json();
+
+      setPaymentMethods(data);
+      setPaymentMethod(""); // começa vazio
+    } catch {
+      setError("Erro ao carregar formas de pagamento");
+    }
+  }
+
+  loadPaymentMethods();
+}, []);
+
+useEffect(() => {
+  async function loadOrderTypes() {
+    try {
+      const res = await fetch("/api/order-types");
+      const data = await res.json();
+
+      setOrderTypes(data);
+      setDeliveryType("");
+    } catch {
+      setError("Erro ao carregar tipos de pedido");
+    }
+  }
+
+  loadOrderTypes();
+}, []);
 
   useEffect(() => {
     if (!restaurantId) {
@@ -103,13 +176,19 @@ export function CreateOrderView() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
   setError(null);
-  setSuccess(null);
   setIsSubmitting(true);
 
   try {
     const order = await createOrder({
       restaurantId,
-      deliveryAddress,
+      customerName,
+      customerPhone: customerPhone.replace(/\D/g, ""),
+      paymentMethod,
+      notes,
+      deliveryType: deliveryType as "delivery" | "pickup",
+      deliveryAddress:
+      deliveryType ===  "delivery" ? deliveryAddress : undefined,
+      estimatedDeliveryAt: estimatedDeliveryAt ? new Date(estimatedDeliveryAt).toISOString() : undefined,
       items,
     });
 
@@ -125,11 +204,9 @@ export function CreateOrderView() {
 }
 
   return (
-    <main className="min-h-screen bg-slate-50 mx-auto w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
+    <main className="min-h-screen bg-gray-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-7">
-          Novo pedido
-        </h1>
+        <PageHeader title="Novo pedido" />
       </header>
 
       <OrderFeedback error={error} success={success} />
@@ -138,65 +215,119 @@ export function CreateOrderView() {
         onSubmit={handleSubmit}
         className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
       >
-        <section className="gap-4">
-          <h2 className="font-medium text-slate-700 mb-2">
-            Restaurante:
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            Informações do cliente
           </h2>
 
-          <select
-            value={restaurantId}
-            onChange={(event) => setRestaurantId(event.target.value)}
-            className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+        <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid gap-2">
+            <label className="text-sm font-medium text-slate-700">
+              Nome do cliente:
+            </label>
+            <input placeholder="Ex: Maria Silva" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+          </div>
+
+          <div className="grid gap-2">
+            <label className="text-sm font-medium text-slate-700">
+              Telefone:
+            </label> 
+              <input placeholder="(00) 00000-0000" value={customerPhone} onChange={(e) => setCustomerPhone(formatPhone(e.target.value))}
+  maxLength={15} className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"/>
+          </div>  
+
+          <div className="grid gap-2">
+              <label className="text-sm font-medium text-slate-700">
+              Forma de pagamento:
+              </label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
-            <option value="">Selecione um restaurante</option>
+            <option value="">Selecione</option>
 
-            {restaurants.map((restaurant) => (
-              <option
-                key={restaurant.id}
-                value={restaurant.id}
+            {paymentMethods.map((method) => (
+    <option key={method.id} value={method.id}>
+      {method.name}
+    </option>
+  ))}
+        </select>
+            </div>
+
+          <div className="grid gap-2">
+            <label className="text-sm font-medium text-slate-700">
+              Tipo de pedido:
+            </label>
+            <select
+                value={deliveryType}
+                onChange={(e) => setDeliveryType(e.target.value)}
+                className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               >
-                {restaurant.name}
-              </option>
-            ))}
-          </select>
-        </section> 
+                <option value="">Selecione</option>
 
-        <section className="grid">
-            <h2 className="font-medium text-slate-700 mb-2">Endereço de entrega:</h2>
+                {orderTypes.map((type) => (
+    <option key={type.id} value={type.id}>
+      {type.name}
+    </option>
+  ))} 
+        </select> 
+          </div>
+          </div>
 
-            <textarea
-              value={deliveryAddress}
-              onChange={(event) =>
-              setDeliveryAddress(event.target.value)
-            }
-            placeholder="Rua, número, bairro, cidade"
-            rows={3}
-            className="py-2 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-          />
+          {deliveryType === "delivery" && (
+            <div className="grid gap-2 mt-4">
+              <label className="text-sm font-medium text-slate-700">
+                Endereço de entrega:
+              </label>
+              <textarea
+                placeholder="Endereço de entrega"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                rows={3}
+                className="rounded-xl border px-4 py-3 border-slate-300 bg-white text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
+                "
+              />
+              </div>
+            )}
+
         </section>
 
-        <section className="gap-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-medium text-slate-700 mt-10 mb-2">
-              Itens do pedido:
-            </h2>
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            Informações do pedido
+          </h2>
 
-            <button
-              type="button"
-              onClick={() =>
-                setItems((current) => [
-                  ...current,
-                  { ...emptyItem },
-                ])
-              }
-              disabled={!restaurantId}
-              className="h-9 px-3 text-sm disabled:opacity-50 border border-green-600
-            cursor-pointer inline-flex items-center justify-center rounded-xl bg-green-600 font-semibold text-white shadow-lg shadow-green-600/25 transition-all duration-300 hover:bg-green-500
-              "
-            >
-              Adicionar item
-            </button>
+          <div>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-slate-700">
+                Restaurante:
+              </label>
+              <select
+                value={restaurantId}
+                onChange={(event) => setRestaurantId(event.target.value)}
+                className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              >
+              <option value="">Selecione</option>
+
+              {restaurants.map((restaurant) => (
+                <option
+                  key={restaurant.id}
+                  value={restaurant.id}
+                >
+                  {restaurant.name}
+                </option>
+              ))}
+          </select>
           </div>
+
+          <div className="grid gap-2 mt-4">
+            <label className="text-sm font-medium text-slate-700">
+              Itens do pedido:
+            </label> 
+
+            <section className="gap-3">
+          
 
           <div className="grid gap-3">
             {items.map((item, index) => (
@@ -244,14 +375,84 @@ export function CreateOrderView() {
                   type="button"
                   disabled={items.length === 1}
                   onClick={() => removeItem(index)}
-                  className="h-10 px-3 text-sm disabled:opacity-50 border border-red-600 cursor-pointer inline-flex items-center justify-center rounded-xl bg-red-600  font-semibold text-white shadow-lg shadow-red-600/25 transition-all duration-300 hover:bg-red-500"
+                  className="h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed border border-red-200 bg-red-50 text-red-600 rounded-xl inline-flex items-center justify-center transition-all duration-300 hover:bg-red-100 hover:text-red-700 cursor-pointer"
                 >
-                  Remover
+                  <FaTrash size={14} />
                 </button>
               </div>
             ))}
           </div>
+          <div className="mt-4">
+
+            <button
+              type="button"
+              onClick={() =>
+                setItems((current) => [
+                  ...current,
+                  { ...emptyItem },
+                ])
+              }
+              disabled={!restaurantId}
+              className="gap-2 h-9 px-4 text-sm disabled:opacity-40 disabled:cursor-not-allowed border border-green-600
+            cursor-pointer inline-flex items-center justify-center rounded-xl bg-green-600 font-semibold text-white shadow-lg shadow-green-600/25 transition-all duration-300 hover:bg-green-500
+              "
+            >
+              <FaPlus size={12} />
+              <span>Adicionar item</span>
+            </button>
+          </div>
         </section>
+              
+          </div>
+
+          <div className="grid gap-2 mt-8">
+            <label className="text-sm font-medium text-slate-700">
+              Notas do pedido (opcional):
+            </label>
+            <textarea
+              placeholder="Observações"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              className="py-3 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            />
+          </div>
+
+
+          <div className="min-w-[260px] rounded-xl border border-slate-300 bg-slate-100 p-4 shadow-sm mt-4">
+  <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700 mb-4">
+    Resumo do pedido
+  </h3>
+
+  <div className="space-y-3 text-sm">
+    <div className="flex items-center justify-between">
+      <span className="text-slate-600">Subtotal</span>
+      <span className="font-medium text-slate-900">
+        R$ {subtotal.toFixed(2)}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between">
+      <span className="text-slate-600">Taxa de entrega</span>
+      <span className="font-medium text-slate-900">
+        R$ {deliveryFee.toFixed(2)}
+      </span>
+    </div>
+
+    <div className="border-t border-slate-300 pt-3 mt-3">
+      <div className="flex items-center justify-between">
+        <span className="text-base font-bold text-slate-900">
+          Total Geral
+        </span>
+        <span className="text-lg font-bold text-slate-900">
+          R$ {total.toFixed(2)}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+          </div>
+        </section> 
 
         <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
           <button
@@ -263,10 +464,12 @@ export function CreateOrderView() {
             Cancelar
           </button>
 
+          
+
           <button
             type="submit"
             disabled={!canSubmit || isSubmitting}
-            className="h-10 px-4 text-sm disabled:opacity-50 border border-blue-600 cursor-pointer inline-flex items-center justify-center rounded-xl bg-blue-600 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
+            className="h-10 px-4 disabled:opacity-40 disabled:cursor-not-allowed border border-blue-600 cursor-pointer inline-flex items-center justify-center rounded-xl bg-blue-600 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
           >
             {isSubmitting ? "Criando..." : "Criar pedido"}
           </button>

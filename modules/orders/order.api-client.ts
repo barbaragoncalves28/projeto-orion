@@ -50,7 +50,13 @@ export async function fetchOrderById(params: {
 
 export async function createOrder(params: { 
   restaurantId: string;
+  customerName: string;
+  customerPhone: string;
+  paymentMethod: "pix" | "dinheiro" | "debito" | "credito"; 
+  notes?: string; 
+  deliveryType: "delivery" | "pickup";
   deliveryAddress: string;
+  estimatedDeliveryAt?: string;
   items: DraftOrderItem[];
 }) {
   const response = await fetch("/api/orders", {
@@ -60,7 +66,13 @@ export async function createOrder(params: {
     },
     body: JSON.stringify({
       restaurantId: params.restaurantId,
+      customerName: params.customerName,
+      customerPhone: params.customerPhone,
+      paymentMethod: params.paymentMethod,
+      notes: params.notes,
+      deliveryType: params.deliveryType,
       deliveryAddress: params.deliveryAddress,
+      estimatedDeliveryAt: params.estimatedDeliveryAt,
       items: params.items,
     }),
   });
