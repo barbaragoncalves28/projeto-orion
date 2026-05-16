@@ -1,6 +1,6 @@
 import { DashboardShell } from "@/components/sidebar/DashboardShell";
 
-export default function DashboardLayout({
+export default function OrdersLayout({
   children,
 }: {
   children: React.ReactNode;

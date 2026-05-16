@@ -103,7 +103,7 @@ export function OrderDetailsView({ orderId }: { orderId: string }) {
               <div className="grid gap-2">
                 <label className="text-slate-700 text-base font-bold">Observações:</label>
                 
-                <textarea value={capitalize(order.notes)} readOnly rows={3} className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none resize-none"/>
+                <textarea value={capitalize(order.notes)} readOnly rows={4} className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none resize-none"/>
               </div>
               )}
               </div>
