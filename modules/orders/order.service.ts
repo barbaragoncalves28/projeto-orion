@@ -33,6 +33,7 @@ import { createOrderEvent } from "./order-event.repository";
 const eventNameByStatus: Record<UpdateOrderStatusInput["newStatus"], OrderEventName> = {
   confirmed: "order_confirmed",
   preparing: "order_preparing",
+  order_ready: "order_ready",
   out_for_delivery: "order_out_for_delivery",
   delivered: "order_delivered",
   cancelled: "order_cancelled",

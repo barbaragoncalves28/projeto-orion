@@ -9,7 +9,7 @@ import {
   formatMoney,
   formatPhone,
   capitalize,
-  nextStatusByCurrent,
+  getNextStatus,
   statusLabels,
 } from "../order.ui";
 import { OrderFeedback } from "./OrderFeedback";
@@ -34,9 +34,12 @@ export function OrderDetailsView({ orderId }: { orderId: string }) {
     role: session.role,
   });
 
-  console.log("ORDER:", order);
+  console.log("ORDER:", order); 
 
-  const nextStatus = order ? nextStatusByCurrent[order.status] : undefined;
+  const nextStatus = order ? getNextStatus(
+      order.status,
+      order.delivery_type as "delivery" | "pickup"
+    ) : undefined;
   const canChangeStatus = Boolean(nextStatus) && session.role !== "customer";
   const canCancelOrder = order ? canCancel(order.status) : false;
 

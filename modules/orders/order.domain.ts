@@ -11,8 +11,12 @@ export type OrderItemSnapshot = {
 const allowedTransitions: Partial<Record<OrderStatus, OrderStatus[]>> = {
   pending: ["confirmed", "cancelled"],
   confirmed: ["preparing", "cancelled"],
-  preparing: ["out_for_delivery"],
+  preparing: ["out_for_delivery", "order_ready"],
+  order_ready: ["delivered"],
   out_for_delivery: ["delivered"],
+
+  delivered: [],
+  cancelled: [],
 };
 
 export function assertValidStatusTransition(

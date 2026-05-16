@@ -5,6 +5,7 @@ const uuidMessage = "ID inválido";
 export const orderStatusSchema = z.enum([
   "confirmed",
   "preparing",
+  "order_ready",
   "out_for_delivery",
   "delivered",
   "cancelled",
@@ -14,6 +15,7 @@ export const listOrderStatusSchema = z.enum([
   "pending",
   "confirmed",
   "preparing",
+  "order_ready",
   "out_for_delivery",
   "delivered",
   "cancelled",

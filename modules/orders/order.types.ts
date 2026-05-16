@@ -2,6 +2,7 @@ export type OrderStatus =
   | "pending"
   | "confirmed"
   | "preparing"
+  | "order_ready"
   | "out_for_delivery"
   | "delivered"
   | "cancelled";
@@ -24,6 +25,7 @@ export interface OrderRecord {
 export type OrderEventName =
   | "order_confirmed"
   | "order_preparing"
+  | "order_ready"
   | "order_out_for_delivery"
   | "order_delivered"
   | "order_cancelled";
