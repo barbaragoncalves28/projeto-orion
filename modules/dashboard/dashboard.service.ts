@@ -4,6 +4,8 @@ import {
   getOrdersPerDay,
   getTopProducts,
   getAverageDeliveryTime,
+  getOrdersByStatus,
+  getOrdersByPaymentMethod,
 } from "./dashboard.repository";
 
 let cache: any = null;
@@ -16,12 +18,16 @@ async function fetchDashboardData() {
     ordersPerDay,
     topProducts,
     avgDeliveryTime,
+    ordersByStatus,
+    ordersByPaymentMethod,
   ] = await Promise.all([
     getTotalRevenue(),
     getAverageTicket(),
     getOrdersPerDay(),
     getTopProducts(),
     getAverageDeliveryTime(),
+    getOrdersByStatus(),
+    getOrdersByPaymentMethod(),
   ]);
 
   return {
@@ -30,6 +36,8 @@ async function fetchDashboardData() {
     ordersPerDay,
     topProducts,
     avgDeliveryTime,
+    ordersByStatus,
+    ordersByPaymentMethod,
   };
 }
 

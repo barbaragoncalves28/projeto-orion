@@ -32,6 +32,19 @@ export async function getOrdersPerDay() {
   return res.rows;
 }
 
+export async function getOrdersByStatus() {
+  const res = await pool.query(`
+    SELECT
+      status,
+      COUNT(*)::int as total
+    FROM orders
+    GROUP BY status
+    ORDER BY total DESC
+  `);
+
+  return res.rows;
+}
+
 export async function getTopProducts() {
   const res = await pool.query(`
     SELECT 
@@ -59,4 +72,17 @@ export async function getAverageDeliveryTime() {
   `);
 
   return Number(res.rows[0].avg_minutes);
+}
+
+export async function getOrdersByPaymentMethod() {
+  const res = await pool.query(`
+    SELECT
+      payment_method,
+      COUNT(*)::int as total
+    FROM orders
+    GROUP BY payment_method
+    ORDER BY total DESC
+  `);
+
+  return res.rows;
 }
