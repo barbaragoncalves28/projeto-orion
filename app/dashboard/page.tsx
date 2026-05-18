@@ -18,6 +18,7 @@ import {
   Legend,
 } from "recharts";
 import { FaHome } from "react-icons/fa";
+import Image from "next/image";
 
 type DashboardData = {
   totalRevenue: number;
@@ -46,20 +47,76 @@ type DashboardData = {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/dashboard")
-      .then((res) => res.json())
-      .then(setData);
-  }, []);
+  async function loadDashboard() {
+    const res = await fetch("/api/dashboard");
+    const result = await res.json();
 
-  if (!data) {
+    setData(result);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }
+
+  loadDashboard();
+}, []);
+
+  if (loading || !data) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
-        Carregando dashboard...
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-white">
+        <div className="w-36 h-36 rounded-full overflow-hidden shadow-2xl mb-6 border-4 border-slate-200 animate-pulse">
+          <Image
+            src="/images/orion.png"
+            alt="Sistema Orion"
+            width={112}
+            height={112}
+            priority
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+      <div className="w-12 h-12 border-4 border-zinc-700 border-t-amber-400 rounded-full animate-spin mb-4" />
+
+      <h2 className="text-xl font-semibold">Carregando dashboard</h2>
+      <p className="text-zinc-400 mt-2 text-sm">
+        Aguarde enquanto buscamos seus dados...
+      </p>
       </div>
     );
   }
+
+  const statusLabels: Record<string, string> = {
+  pending: "Pendente",
+  confirmed: "Confirmado",
+  preparing: "Preparando",
+  order_ready: "Pedido pronto",
+  out_for_delivery: "Saiu para entrega",
+  delivered: "Entregue",
+  cancelled: "Cancelado",
+};
+
+const translatedOrdersByStatus = data.ordersByStatus.map((item) => ({
+  ...item,
+  status: statusLabels[item.status] || item.status,
+}));
+
+const paymentLabels: Record<string, string> = {
+  credito: "Crédito",
+  debito: "Débito",
+  dinheiro: "Dinheiro",
+  pix: "Pix",
+};
+
+const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
+  (item) => ({
+    ...item,
+    payment_method:
+      paymentLabels[item.payment_method] || item.payment_method,
+  })
+);
 
   const COLORS = [
   "#f59e0b",
@@ -148,7 +205,7 @@ export default function DashboardPage() {
           <ResponsiveContainer width="100%" height={350}>
             <PieChart>
               <Pie
-                data={data.ordersByStatus}
+                data={translatedOrdersByStatus}
                 dataKey="total"
                 nameKey="status"
                 cx="50%"
@@ -160,7 +217,7 @@ export default function DashboardPage() {
                 `${name} ${(percent * 100).toFixed(0)}%`
               }
           >
-              {data.ordersByStatus.map((entry, index) => (
+              {translatedOrdersByStatus.map((entry, index) => (
               <Cell
               key={entry.status}
               fill={COLORS[index % COLORS.length]}
@@ -182,7 +239,7 @@ export default function DashboardPage() {
   <ResponsiveContainer width="100%" height={350}>
     <PieChart>
       <Pie
-        data={data.ordersByPaymentMethod}
+        data={translatedOrdersByPaymentMethod}
         dataKey="total"
         nameKey="payment_method"
         cx="50%"
@@ -194,7 +251,7 @@ export default function DashboardPage() {
           `${name} ${(percent * 100).toFixed(0)}%`
         }
       >
-        {data.ordersByPaymentMethod?.map((entry, index) => (
+        {translatedOrdersByPaymentMethod.map((entry, index) => (
           <Cell
             key={entry.payment_method}
             fill={COLORS[index % COLORS.length]}
