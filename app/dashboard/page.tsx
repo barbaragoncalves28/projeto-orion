@@ -214,7 +214,7 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
                 outerRadius={100}
                 paddingAngle={4}
                 label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(0)}%`
+                `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
               }
           >
               {translatedOrdersByStatus.map((entry, index) => (
@@ -248,7 +248,7 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
         outerRadius={100}
         paddingAngle={4}
         label={({ name, percent }) =>
-          `${name} ${(percent * 100).toFixed(0)}%`
+          `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
         }
       >
         {translatedOrdersByPaymentMethod.map((entry, index) => (
