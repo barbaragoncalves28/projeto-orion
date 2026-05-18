@@ -2,15 +2,29 @@
 
 import { useState } from "react";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, } from "react-icons/fa";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleRegister() {
-    await fetch("/api/auth/register", {
+    setError("");
+    if (!name || !email || !password) {
+    setError("Preencha todos os campos");
+    return;
+  }
+
+  if (email.toLowerCase() !== "admin@gmail.com") {
+    setError("Email inválido");
+    return;
+  }
+
+    const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,7 +36,14 @@ export default function RegisterPage() {
       }),
     });
 
-    window.location.href = "/login";
+    if (!res.ok) {
+    setError("Erro ao criar conta");
+    return;
+  }
+    toast.success("Conta criada com sucesso!");
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1500);
   }
 
   return (
@@ -72,7 +93,7 @@ export default function RegisterPage() {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl border border-slate-100 bg-slate-100 pl-12 pr-4 py-3 placeholder:text-slate-500 outline-none transition focus:border-blue-200 focus:ring-2 focus:ring-blue-200/20"
+          className="w-full rounded-xl border border-slate-100 bg-white pl-12 pr-4 py-3 placeholder:text-slate-500 outline-none transition focus:border-blue-200 focus:ring-2 focus:ring-blue-200/20"
         /> 
 
         <button
@@ -84,12 +105,27 @@ export default function RegisterPage() {
   </button> 
       </div>
 
+      {error && (
+        <p className="text-red-400 text-sm mb-4 text-center">
+          {error}
+        </p>
+      )}
+
         <button
           onClick={handleRegister}
           className="cursor-pointer w-full inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
         >
           Criar conta
         </button>
+
+        <div className="mt-5 text-center">
+          <Link
+            href="/"
+            className="text-sm text-slate-300 hover:text-slate-200 transition underline underline-offset-4"
+          >
+            Voltar ao início
+          </Link>
+        </div>
       </div>
     </div>
   );

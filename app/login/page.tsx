@@ -4,19 +4,29 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash,
 } from "react-icons/fa";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const router = useRouter(); 
 
   async function handleLogin() {
+    setError("");
+
     if (!email || !password) {
-      alert("Preencha email e senha");
+      setError("Preencha email e senha");
       return;
     }
+
+    if (email.toLowerCase() !== "admin@gmail.com") {
+    setError("Credenciais inválidas");
+    return;
+  }
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -24,18 +34,22 @@ export default function LoginPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-    }); 
+    });
 
     console.log("status login:", res.status);
 
     if (res.ok) {
-      router.push("/orders");
-      router.refresh();
-      return;
-    }
+      toast.success("Login realizado com sucesso!");
 
-    const data = await res.json();
-    alert(data.error || "Erro no login");
+      setTimeout(() => {
+        router.push("/orders");
+        router.refresh();
+        }, 1500);
+    return;
+  } 
+
+  setError("Credenciais inválidas");
+
   }
 
   return (
@@ -88,6 +102,12 @@ export default function LoginPage() {
           </button>
       </div>
 
+      {error && (
+        <p className="text-red-400 text-sm mb-4 text-center">
+          {error}
+        </p>
+      )}
+
       <button
         type="button"
         onClick={handleLogin}
@@ -95,6 +115,15 @@ export default function LoginPage() {
       >
         Entrar
       </button>
+
+      <div className="mt-5 text-center">
+        <Link
+          href="/"
+          className="text-sm text-slate-300 hover:text-slate-200 transition underline underline-offset-4"
+      >
+            Voltar ao início
+        </Link>
+        </div>
       </div>
     </div>
   );
