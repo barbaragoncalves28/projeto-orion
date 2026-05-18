@@ -1,100 +1,112 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import {
   cancelOrder,
   fetchOrderById,
   updateOrderStatus,
-} from "../order.api-client";
-import type { OrderDetails, OrderStatus } from "../order.ui-types";
+} from '../order.api-client'
+import type { OrderDetails, OrderStatus } from '../order.ui-types'
 
-export function useOrderDetails(params: {
-  orderId: string;
-  userId: string;
-  role: string;
-}) {
-  const { orderId, userId, role } = params;
+export function useOrderDetails(params: { orderId: string }) {
+  const { orderId } = params
 
-  const [order, setOrder] = useState<OrderDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMutating, setIsMutating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<OrderDetails | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isMutating, setIsMutating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const loadOrder = useCallback(async () => {
-    if (!userId) {
-      setOrder(null);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
       const data = await fetchOrderById({
         orderId,
-        userId,
-        role,
-      });
+      })
 
-      setOrder(data);
+      setOrder(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar pedido");
+      setError(err instanceof Error ? err.message : 'Erro ao carregar pedido')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [orderId, userId, role]);
+  }, [orderId])
 
   useEffect(() => {
-    void loadOrder();
-  }, [loadOrder]);
+    let isCurrent = true
+
+    async function loadInitialOrder() {
+      try {
+        const data = await fetchOrderById({
+          orderId,
+        })
+
+        if (!isCurrent) return
+
+        setOrder(data)
+        setError(null)
+      } catch (err) {
+        if (!isCurrent) return
+
+        setError(err instanceof Error ? err.message : 'Erro ao carregar pedido')
+      } finally {
+        if (isCurrent) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadInitialOrder()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [orderId])
 
   async function changeStatus(newStatus: OrderStatus) {
-    setIsMutating(true);
-    setError(null);
+    setIsMutating(true)
+    setError(null)
 
     try {
       await updateOrderStatus({
         orderId,
         newStatus,
-        userId,
-        role,
-      });
+      })
 
-      await loadOrder();
-      toast.success("Status atualizado com sucesso.");
+      await loadOrder()
+      toast.success('Status atualizado com sucesso.')
     } catch (err) {
       const message =
-      err instanceof Error ? err.message : "Erro ao atualizar status";
+        err instanceof Error ? err.message : 'Erro ao atualizar status'
 
-    setError(message);
-    toast.error(message);
+      setError(message)
+      toast.error(message)
     } finally {
-      setIsMutating(false);
+      setIsMutating(false)
     }
   }
 
   async function cancel() {
-    setIsMutating(true);
-    setError(null);
+    setIsMutating(true)
+    setError(null)
 
     try {
       await cancelOrder({
         orderId,
-        userId,
-        role,
-      });
+      })
 
-      await loadOrder();
-      toast.success("Pedido cancelado com sucesso.");
+      await loadOrder()
+      toast.success('Pedido cancelado com sucesso.')
     } catch (err) {
       const message =
-      err instanceof Error ? err.message : "Erro ao cancelar pedido";
+        err instanceof Error ? err.message : 'Erro ao cancelar pedido'
 
-    setError(message);
-    toast.error(message);
+      setError(message)
+      toast.error(message)
     } finally {
-      setIsMutating(false);
+      setIsMutating(false)
     }
   }
 
@@ -106,5 +118,5 @@ export function useOrderDetails(params: {
     reload: loadOrder,
     changeStatus,
     cancel,
-  };
+  }
 }

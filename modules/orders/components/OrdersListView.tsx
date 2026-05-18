@@ -28,13 +28,13 @@ export function OrdersListView() {
   });
 
   return (
-    <main className="min-h-screen bg-gray-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <main className="bg-gray-50 mx-auto grid w-full gap-6 px-4 py-8 sm:px-6 lg:px-20">
+      <header className="flex flex-col gap-4 sm:flex-row sm:justify-between">
         <div>
           <PageHeader title="Lista de pedidos" />
         </div>
 
-        <Link 
+        <Link
           href="/orders/new"
           className="cursor-pointer inline-flex h-10 items-center text-sm rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
         >
@@ -114,7 +114,7 @@ function LoadingRows() {
           key={item}
           className="h-24 animate-pulse rounded-2xl border border-slate-200 bg-slate-100"
         />
-      ))} 
+      ))}
     </div>
   );
 }

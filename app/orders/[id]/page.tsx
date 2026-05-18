@@ -1,11 +1,13 @@
-import { OrderDetailsView } from "@/modules/orders/components/OrderDetailsView";
+import { getUserFromRequest } from '@/lib/getUser'
+import { OrderDetailsView } from '@/modules/orders/components/OrderDetailsView'
 
 export default async function OrderDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
-  const { id } = await params;
+  const { id } = await params
+  const user = await getUserFromRequest()
 
-  return <OrderDetailsView orderId={id} />;
+  return <OrderDetailsView orderId={id} currentUserRole={user.role} />
 }

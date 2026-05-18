@@ -1,0 +1,17 @@
+services:
+  postgres:
+    restart: always
+    image: postgres:18
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 28062001
+      POSTGRES_DB: orion
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - '5432:5432'
+
+volumes:
+  pgdata:
