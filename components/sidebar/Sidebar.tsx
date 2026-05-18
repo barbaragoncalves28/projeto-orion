@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { FaChartPie, FaHome } from "react-icons/fa";
+import { usePathname, useRouter } from "next/navigation";
+import { FaChartPie, FaHome, FaSignOutAlt } from "react-icons/fa";
 import { SidebarLink } from "./SidebarLink";
 import Image from "next/image";
 
@@ -24,6 +24,14 @@ const navigationItems = [
 
 export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function handleLogout() {
+  document.cookie =
+    "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+  router.push("/login");
+}
 
   return (
     <aside className="flex h-full w-72 flex-col border-r border-slate-200 bg-white shadow-sm">
@@ -61,6 +69,16 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           );
         })}
       </nav>
+
+      <div className="border-t border-slate-200 p-3">
+        <button
+          onClick={handleLogout}
+          className="cursor-pointer flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+          >
+          <FaSignOutAlt size={16} />
+            Sair
+        </button>
+      </div>
     </aside>
   );
 }
