@@ -55,7 +55,7 @@ export function OrderDetailsView({
           <section className="grid gap-4  bg-white p-4 rounded-2xl border border-slate-200  shadow-sm">
             <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="grid gap-2">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                     Pedido: #{order.id.slice(0, 4).toUpperCase()}
                   </span>
@@ -66,7 +66,7 @@ export function OrderDetailsView({
                   <div className="flex items-center gap-2">
                     <OrderDeliveryTypeBadge type={order.delivery_type} />
                   </div>
-                  <p className="mt-4">
+                  <p className="mt-4 wrap-break-word">
                     <strong className="text-slate-700 text-base">
                       Cliente:
                     </strong>{' '}
@@ -88,7 +88,7 @@ export function OrderDetailsView({
                   </p>
 
                   {order.delivery_type === 'delivery' && (
-                    <p>
+                    <p className="wrap-break-word">
                       <strong className="text-slate-700 text-base">
                         Endereço:
                       </strong>{' '}
@@ -105,7 +105,7 @@ export function OrderDetailsView({
 
                   {order.notes && (
                     <div className="grid gap-2">
-                      <label className="text-slate-700 text-base font-bold">
+                      <label className="text-slate-700 text-base font-bold wrap-break-word">
                         Observações:
                       </label>
 
@@ -182,7 +182,7 @@ export function OrderDetailsView({
             </section>
           </section>
 
-          <aside className="grid content-start gap-4">
+          <aside className="grid content-start gap-4 w-full">
             <section className="grid gap-3 p-5 rounded-2xl border border-slate-200 bg-white shadow-sm">
               <button
                 type="button"
@@ -223,7 +223,7 @@ export function OrderDetailsView({
                 {history.map((entry, index) => (
                   <div
                     key={`${entry.status}-${index}`}
-                    className="flex items-center space-y-1 justify-between"
+                    className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <OrderStatusBadge status={entry.status} />
                     <span className="block text-xs text-slate-500">

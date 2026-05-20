@@ -66,8 +66,8 @@ export default function DashboardPage() {
 
   if (loading || !data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-white">
-        <div className="w-36 h-36 rounded-full overflow-hidden shadow-2xl mb-6 border-4 border-slate-200 animate-pulse">
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-white px-4 text-center">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden shadow-2xl mb-6 border-4 border-slate-200 animate-pulse">
           <Image
             src="/images/orion.png"
             alt="Sistema Orion"
@@ -128,7 +128,7 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
 ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-8">
+    <div className="min-h-screen overflow-x-hidden bg-zinc-950 text-white p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <Link
@@ -159,8 +159,8 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
 
       {/* gráfico pedidos */}
       <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg">
+          <h2 className="mb-4 text-base sm:text-lg lg:text-xl font-semibold">
             Pedidos por dia
           </h2>
 
@@ -180,15 +180,15 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
         </div>
 
         {/* top produtos */}
-        <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg">
+          <h2 className="mb-4 text-base sm:text-lg lg:text-xl font-semibold">
             Produtos mais vendidos
           </h2>
 
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.topProducts}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#a1a1aa" />
+              <XAxis dataKey="name" stroke="#a1a1aa" interval={0} angle={-35} textAnchor="end" height={80} tick={{ fontSize: 10 }}/>
               <YAxis stroke="#a1a1aa" />
               <Tooltip />
               <Bar dataKey="totalSold" fill="#3b82f6" />
@@ -197,8 +197,8 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
         </div>
 
         <div className="lg:col-span-2 grid lg:grid-cols-2 gap-8 mt-8">
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">
+          <div className="bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg">
+          <h2 className="mb-4 text-base sm:text-lg lg:text-xl font-semibold">
               Distribuição de pedidos por status
           </h2>
 
@@ -226,13 +226,13 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
         </Pie>
 
         <Tooltip />
-        <Legend verticalAlign="bottom" height={36}/>
+        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: "12px" }}/>
         </PieChart>
       </ResponsiveContainer>
     </div>
 
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-  <h2 className="text-xl font-semibold mb-4">
+          <div className="bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg">
+  <h2 className="mb-4 text-base sm:text-lg lg:text-xl font-semibold">
     Pedidos por pagamento
   </h2>
 
@@ -258,9 +258,9 @@ const translatedOrdersByPaymentMethod = data.ordersByPaymentMethod.map(
           />
         ))}
       </Pie>
-
-      <Tooltip />
-      <Legend verticalAlign="bottom" height={36} />
+ 
+      <Tooltip /> 
+      <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: "12px" }}/>
     </PieChart>
   </ResponsiveContainer>
 </div>
@@ -277,10 +277,10 @@ function Card({
   title: string;
   value: string;
 }) {
-  return (
-    <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-      <p className="text-zinc-400">{title}</p>
-      <h2 className="text-3xl font-bold mt-2">{value}</h2>
+  return ( 
+    <div className="bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg">
+      <p className="text-sm sm:text-base text-zinc-400">{title}</p>
+      <h2 className="mt-2 text-xl sm:text-2xl lg:text-3xl font-bold wrap-break-word leading-tight">{value}</h2>
     </div>
   );
 }

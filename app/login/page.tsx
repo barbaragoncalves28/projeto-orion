@@ -64,12 +64,12 @@ export default function LoginPage() {
 
       <div className="absolute inset-0 bg-black/55" />
 
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-2xl shadow-black/40 p-8">
-      <h1 className="text-3xl font-bold text-white mb-8 flex justify-center">
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-2xl shadow-black/40 p-6 sm:p-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-8 text-center">
           Login
       </h1>
 
-      <p className="text-slate-400 mb-6 justify-center flex">
+      <p className="text-slate-400 text-center mb-6">
           Entre para acessar seu painel de pedidos.
       </p>
 

@@ -47,7 +47,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-6">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -62,7 +62,7 @@ export default function RegisterPage() {
           Criar conta
         </h1>
 
-         <p className="text-slate-400 mb-6">
+         <p className="text-slate-400 mb-6 text-center">
           Cadastre-se para começar a gerenciar seus pedidos.
         </p>
 

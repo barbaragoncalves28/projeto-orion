@@ -66,7 +66,7 @@ export function CreateOrderView() {
 
   const subtotal = useMemo(() => {
     return items.reduce((acc, item) => {
-      const product = products.find((p) => p.id === item.productId);
+      const product = products.find((p) => p.id === Number(item.productId));
       if (!product) return acc;
 
       return acc + Number(product.price) * item.quantity;
@@ -220,7 +220,7 @@ useEffect(() => {
             Informações do cliente
           </h2>
 
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="grid gap-2">
             <label className="text-sm font-medium text-slate-700">
               Nome do cliente:
@@ -333,7 +333,7 @@ useEffect(() => {
             {items.map((item, index) => (
               <div
                 key={index}
-                className="grid gap-3 p-4 sm:grid-cols-[1fr_120px_auto] rounded-2xl border border-slate-200 bg-white shadow-sm"
+                className="grid gap-3 p-4 rounded-2xl border border-slate-200 bg-white shadow-sm grid-cols-1 sm:grid-cols-[1fr_120px_auto]"
               >
                 <select
                   value={item.productId}
@@ -419,7 +419,7 @@ useEffect(() => {
           </div>
 
 
-          <div className="min-w-[260px] rounded-xl border border-slate-300 bg-slate-100 p-4 shadow-sm mt-4">
+          <div className="w-full rounded-xl border border-slate-300 bg-slate-100 p-4 shadow-sm mt-4">
   <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700 mb-4">
     Resumo do pedido
   </h3>

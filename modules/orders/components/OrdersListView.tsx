@@ -36,7 +36,7 @@ export function OrdersListView() {
 
         <Link
           href="/orders/new"
-          className="cursor-pointer inline-flex h-10 items-center text-sm rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
+          className="cursor-pointer w-full sm:w-auto inline-flex h-10 items-center justify-center text-sm rounded-xl bg-blue-600 px-8 font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-300 hover:bg-blue-500"
         >
           Novo pedido
         </Link>
@@ -73,7 +73,7 @@ export function OrdersListView() {
               key={order.id}
               className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-blue-300 hover:shadow-md sm:grid-cols-[1fr_auto] sm:items-center"
             >
-              <div className="grid gap-2">
+              <div className="grid gap-2 min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm text-slate-600">
                     Pedido #{order.id.slice(0, 4).toUpperCase()}
