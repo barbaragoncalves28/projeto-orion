@@ -53,19 +53,18 @@ export function OrderDetailsView({
       ) : order ? (
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <section className="grid gap-4  bg-white p-4 rounded-2xl border border-slate-200  shadow-sm">
-            <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-3 border-b border-slate-200 pb-4">
               <div className="grid gap-2">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                     Pedido: #{order.id.slice(0, 4).toUpperCase()}
                   </span>
                 </div>
-                <OrderStatusBadge status={order.status} />
-
-                <div className="grid gap-2 text-sm mt-2">
-                  <div className="flex items-center gap-2">
-                    <OrderDeliveryTypeBadge type={order.delivery_type} />
-                  </div>
+                <div className="flex items-center gap-2">
+                  <OrderStatusBadge status={order.status} />
+                  <OrderDeliveryTypeBadge type={order.delivery_type} />
+                </div>
+                <div className="grid gap-2 text-sm">
                   <p className="mt-4 wrap-break-word">
                     <strong className="text-slate-700 text-base">
                       Cliente:
@@ -110,7 +109,7 @@ export function OrderDetailsView({
                       </label>
 
                       <textarea
-                        value={capitalize(order.notes)}
+                        value={order.notes}
                         readOnly
                         rows={4}
                         className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none resize-none"
