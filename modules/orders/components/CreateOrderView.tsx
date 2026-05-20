@@ -331,7 +331,7 @@ export function CreateOrderView() {
                   {items.map((item, index) => (
                     <div
                       key={index}
-                      className="grid gap-3 p-4 rounded-2xl border border-slate-200 bg-white shadow-sm grid-cols-1 sm:grid-cols-[1fr_120px_auto]"
+                      className="flex flex-col sm:flex-row gap-3 p-4 rounded-2xl border border-slate-200 bg-white shadow-sm"
                     >
                       <select
                         value={item.productId}
@@ -341,7 +341,7 @@ export function CreateOrderView() {
                             productId: event.target.value,
                           })
                         }
-                        className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        className="flex-none sm:flex-1 h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       >
                         <option value="">Selecione um produto</option>
 
@@ -352,28 +352,30 @@ export function CreateOrderView() {
                         ))}
                       </select>
 
-                      <input
-                        type="number"
-                        min={1}
-                        value={item.quantity}
-                        onChange={(event) =>
-                          updateItem(index, {
-                            ...item,
-                            quantity: Number(event.target.value),
-                          })
-                        }
-                        className="h-10 px-3 text-sm
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          min={1}
+                          value={item.quantity}
+                          onChange={(event) =>
+                            updateItem(index, {
+                              ...item,
+                              quantity: Number(event.target.value),
+                            })
+                          }
+                          className="h-10 px-3 text-sm flex-1
                   rounded-xl border border-slate-300 bg-white text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                      />
+                        />
 
-                      <button
-                        type="button"
-                        disabled={items.length === 1}
-                        onClick={() => removeItem(index)}
-                        className="h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed border border-red-200 bg-red-50 text-red-600 rounded-xl inline-flex items-center justify-center transition-all duration-300 hover:bg-red-100 hover:text-red-700 cursor-pointer"
-                      >
-                        <FaTrash size={14} />
-                      </button>
+                        <button
+                          type="button"
+                          disabled={items.length === 1}
+                          onClick={() => removeItem(index)}
+                          className="h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed border border-red-200 bg-red-50 text-red-600 rounded-xl inline-flex items-center justify-center transition-all duration-300 hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                        >
+                          <FaTrash size={14} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
