@@ -50,10 +50,10 @@ export async function createOrder(params: {
   restaurantId: string
   customerName: string
   customerPhone: string
-  paymentMethod: 'pix' | 'dinheiro' | 'debito' | 'credito'
+  paymentMethod: string
   notes?: string
   deliveryType: 'delivery' | 'pickup'
-  deliveryAddress: string
+  deliveryAddress?: string
   estimatedDeliveryAt?: string
   items: DraftOrderItem[]
 }) {
