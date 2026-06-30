@@ -69,8 +69,6 @@ CREATE TABLE "public"."orders" (
 );
 
 DROP TABLE IF EXISTS "public"."order_status_history";
-DROP TYPE IF EXISTS "public"."order_status";
-CREATE TYPE "public"."order_status" AS ENUM ('pending', 'confirmed', 'preparing', 'out_for_delivery', 'delivered', 'cancelled', 'order_ready');
 
 -- Table Definition
 CREATE TABLE "public"."order_status_history" (
