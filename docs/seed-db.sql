@@ -658,6 +658,36 @@ INSERT INTO "public"."order_items" ("id", "order_id", "product_id", "quantity", 
 ;
 ;
 ;
+
+
+-- Reference data restored from local DB (missing from original export)
+INSERT INTO "public"."restaurants" ("id", "name", "created_at", "description") VALUES
+('5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Smash Point', '2026-05-06T15:47:20.777Z', 'Burgers estilo smash');
+
+INSERT INTO "public"."products" ("id", "restaurant_id", "name", "price", "created_at", "description") VALUES
+('1d8db7a9-fd62-40c4-9e1b-caec860ff957', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'X-Burger', '28.90', '2026-05-06T16:32:08.176Z', 'Cheddar e bacon'),
+('070f8d03-81d5-499d-85f9-84cb4dcb95c3', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Batata frita', '14.00', '2026-05-06T16:32:08.176Z', 'Porção média'),
+('cce96684-961d-4fd7-a3ef-8c7bd268ab74', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Onion Rings', '16.50', '2026-05-06T16:32:08.176Z', 'Anéis de cebola empanados'),
+('064d8c8f-1993-402f-a87d-638af1b50d94', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Combo Duplo', '39.90', '2026-05-06T16:32:08.176Z', 'Burger + fritas + refri'),
+('08937208-11f3-447b-99b2-81b226b6b887', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Refrigerante', '6.00', '2026-05-06T16:32:08.176Z', 'Lata 350ml'),
+('be3106a3-9554-4ef8-a456-529716927db6', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'X-Salada', '26.90', '2026-05-13T17:18:19.436Z', 'Hambúrguer com alface, tomate e queijo'),
+('e83fc5bb-6afc-4f6d-85ed-99656474746a', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'X-Bacon', '31.90', '2026-05-13T17:18:19.436Z', 'Burger com cheddar e bacon crocante'),
+('7ccde791-d9c0-4271-9331-d21e92a9993d', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Smash Duplo', '34.90', '2026-05-13T17:18:19.436Z', 'Dois burgers com queijo'),
+('57595bc2-8dbc-4a2d-8d35-f24e641c294e', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Chicken Crispy', '27.50', '2026-05-13T17:18:19.436Z', 'Frango empanado e maionese especial'),
+('5aa4ab84-e89f-4a2f-8d08-4760a033a982', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Batata com Cheddar', '19.90', '2026-05-13T17:18:19.436Z', 'Batata frita com cheddar e bacon'),
+('318dba34-2de2-4eab-acec-9b6998c5a459', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Nuggets', '17.90', '2026-05-13T17:18:19.436Z', '8 unidades crocantes'),
+('08335365-53b7-4efc-abc0-1fd6b232edb8', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Milkshake Chocolate', '18.90', '2026-05-13T17:18:19.436Z', '400ml cremoso'),
+('2f264c8b-46a6-4930-91ac-bff23982972e', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Milkshake Morango', '18.90', '2026-05-13T17:18:19.436Z', '400ml sabor morango'),
+('25189868-d06e-43c5-996d-6be54a312896', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'X-Havaí Bacon', '36.90', '2026-05-13T17:18:19.436Z', 'Blend bovino 180g, cheddar, bacon crocante, abacaxi caramelizado e maionese defumada'),
+('12156e69-3804-4571-85b9-4a0689b8e53c', '5b38ea02-dd73-40e4-8004-8aa7d5f87be4', 'Combo Família', '89.90', '2026-05-13T17:18:19.436Z', '4 burgers + 2 fritas + 4 refri');
+
+INSERT INTO "public"."payment_methods" ("id", "name") VALUES
+('pix', 'PIX'),
+('dinheiro', 'Dinheiro'),
+('credito', 'Crédito'),
+('debito', 'Débito');
+
+
 ALTER TABLE "public"."orders" ADD FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id");
 ALTER TABLE "public"."orders" ADD FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 ALTER TABLE "public"."orders" ADD FOREIGN KEY ("payment_method") REFERENCES "public"."payment_methods"("id");
