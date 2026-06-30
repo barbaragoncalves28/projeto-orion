@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/order-events/process",
-      "schedule": "* * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
