@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:seed": "node seed-db.js"
+    "db:seed": "node --env-file=.env seed-db.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
