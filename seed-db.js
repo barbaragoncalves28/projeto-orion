@@ -1,33 +1,26 @@
+const fs = require("fs");
+const path = require("path");
 const { Pool } = require("pg");
 
-const pool = new Pool({
-  connectionString: "postgresql://postgres:28062001@localhost:5432/orion",
-});
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error("DATABASE_URL is not set.");
+  process.exit(1);
+}
+
+const pool = new Pool({ connectionString });
 
 async function main() {
+  const schemaPath = path.join(__dirname, "docs", "seed-db.sql");
+  const schema = fs.readFileSync(schemaPath, "utf8");
+
   try {
-    const restaurant = await pool.query(`
-      INSERT INTO restaurants (name)
-      VALUES ('Restaurante Teste')
-      RETURNING id, name
-    `);
-
-    const restaurantId = restaurant.rows[0].id;
-
-    console.log("Restaurant criado:", restaurant.rows[0]);
-
-    const product = await pool.query(
-      `
-      INSERT INTO products (name, price, restaurant_id)
-      VALUES ($1, $2, $3)
-      RETURNING id, name, restaurant_id
-      `,
-      ["Hamburguer Teste", 25.9, restaurantId]
-    );
-
-    console.log("Produto criado:", product.rows[0]);
+    await pool.query(schema);
+    console.log("Database seeded!");
   } catch (error) {
     console.error(error);
+    process.exit(1);
   } finally {
     await pool.end();
   }

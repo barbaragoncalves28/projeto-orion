@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDashboardService } from "./dashboard.service";
+import { getDashboardData } from "./dashboard.service";
 
 export async function getDashboardController() {
-  const data = await getDashboardService();
+  const data = await getDashboardData();
   return NextResponse.json(data);
 }

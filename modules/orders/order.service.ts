@@ -90,7 +90,7 @@ export class OrderService {
             customerName: input.customerName,
             customerPhone: input.customerPhone,
             paymentMethod: input.paymentMethod,
-            notes: input.notes ?? null, 
+            notes: input.notes ?? undefined,
             deliveryType: input.deliveryType,
             deliveryAddress:
               input.deliveryType === "delivery"
@@ -102,7 +102,7 @@ export class OrderService {
           total,
 
           estimatedDeliveryAt:
-          input.estimatedDeliveryAt ?? null,
+          input.estimatedDeliveryAt ?? undefined,
         },
         client
       );
